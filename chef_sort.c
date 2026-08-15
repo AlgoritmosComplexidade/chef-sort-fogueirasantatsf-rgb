@@ -1,62 +1,52 @@
 #include <stdio.h>
 #include <string.h>
 
-// ANÁLISE DE ALGORITMO - Desafio Chef Sort
-// Este é o arquivo inicial para o desafio. 
-// Dependendo do nível escolhido (Novato, Aventureiro ou Mestre), 
-// descomente e utilize as estruturas e funções correspondentes.
+/* Versão comentada do Bubble Sort para strings.
+ */
 
-// ====================================================================
-// ESTRUTURAS DE DADOS (Para Níveis Aventureiro e Mestre)
-// ====================================================================
-
-// Struct para o Nível Aventureiro
-/*
-typedef struct {
-    char nome[50];
-    int qtd_ingredientes;
-} Prato;
-*/
-
-// Struct para o Nível Mestre
-/*
-typedef struct {
-    char nome_prato[50];
-    int numero_comanda;
-} Comanda;
-*/
-
-
-// ====================================================================
-// PROTÓTIPOS DAS FUNÇÕES DE ORDENAÇÃO
-// ====================================================================
-
-// Nível Novato: Bubble Sort para strings
-// Dica: Use strcmp() da biblioteca <string.h> para comparar strings.
-// Dica: Passe ponteiros para contadores de comparações e trocas se quiser alterá-los dentro da função.
 void bubbleSortStrings(char arr[][50], int n, int *comparacoes, int *trocas) {
-    // Sua lógica do Bubble Sort aqui
+    /* arr como um array 2D de strings,
+     * cada string pode ter até 49 caracteres + '\\0'.
+     *
+     * comparacoes e trocas são ponteiros porque quero que a
+     * função atualize esses números e o main veja o resultado.
+     */
+
+    int i, j;
+    char temp[50];
+
+    /* Acho que é melhor zerar os contadores aqui, caso
+     * quem chamar não tenha inicializado.
+     */
+    if (comparacoes) *comparacoes = 0;
+    if (trocas) *trocas = 0;
+
+    /* Loop externo: faço passagens até n-1 (parece que é o padrão) */
+    for (i = 0; i < n - 1; i++) {
+        int trocou = 0; /* flag pra saber se a passagem fez alguma troca */
+
+        /* Loop interno: comparo pares adjacentes */
+        for (j = 0; j < n - i - 1; j++) {
+            /* conto cada comparação que eu faço */
+            if (comparacoes) (*comparacoes)++;
+
+            /* strcmp > 0 significa arr[j] vem depois alfabeticamente que arr[j+1] */
+            if (strcmp(arr[j], arr[j + 1]) > 0) {
+                /* preciso trocar as strings; uso uma temporária com strcpy */
+                strcpy(temp, arr[j]);
+                strcpy(arr[j], arr[j + 1]);
+                strcpy(arr[j + 1], temp);
+
+                /* conto a troca realizada */
+                if (trocas) (*trocas)++;
+                trocou = 1;
+            }
+        }
+
+        /* Se não trocou nada nessa passagem, já tá ordenado -> posso parar */
+        if (!trocou) break;
+    }
 }
-
-// Nível Aventureiro: Selection Sort para array de structs (Prato)
-/*
-void selectionSortPratos(Prato arr[], int n) {
-    // Sua lógica do Selection Sort aqui buscando a menor qtd_ingredientes
-}
-*/
-
-// Nível Mestre: Recursive Insertion Sort para array de structs (Comanda)
-// Dica: Lembre-se de definir o "caso base" (n <= 1) para parar a recursão!
-/*
-void recursiveInsertionSort(Comanda arr[], int n) {
-    // Sua lógica do Insertion Sort Recursivo aqui
-}
-*/
-
-
-// ====================================================================
-// FUNÇÃO PRINCIPAL
-// ====================================================================
 
 int main() {
     printf("=== BEM-VINDO AO CHEF SORT ===\n\n");
@@ -64,44 +54,35 @@ int main() {
     // ---------------------------------------------------------
     // ÁREA DO NÍVEL NOVATO (Despensa / Bubble Sort)
     // ---------------------------------------------------------
-    /*
-    char ingredientes[5][50] = {"Tomate", "Cebola", "Alho", "Cenoura", "Batata"};
-    int num_ingredientes = 5;
+    /* Aqui eu criei um array com 6 ingredientes. Cada string tem espaço para 50 chars.*/
+    char ingredientes[6][50] = {"Tomate", "Cebola", "Alho", "Cenoura", "Batata", "Massa"};
+    int num_ingredientes = 6;
+
+    /* Vou usar variáveis pra guardar quantas comparações e trocas aconteceram.
+     * Inicializo com zero só pra garantir.
+     */
     int comparacoes = 0;
     int trocas = 0;
+    int i;
 
     printf("--- Nivel Novato: Organizando a Despensa ---\n");
     printf("Lista ANTES da ordenacao:\n");
-    // Laco para imprimir ingredientes antes
+    /* Imprimo cada ingrediente antes de ordenar */
+    for (i = 0; i < num_ingredientes; i++) {
+        printf("%s\n", ingredientes[i]);
+    }
 
-    // Chamada da funcao bubbleSortStrings(...)
+    /* Chamo a função de ordenação. Atualiza comparacoes e trocas. */
+    bubbleSortStrings(ingredientes, num_ingredientes, &comparacoes, &trocas);
 
-    printf("\nLista DEPOIS da ordenacao:\n");
-    // Laco para imprimir ingredientes depois
-    // Imprimir totais de comparacoes e trocas
-    */
+    printf("\nLista depois da ordenação:\n");
+    /* Imprimo o resultado pra ver se deu certo */
+    for (i = 0; i < num_ingredientes; i++) {
+        printf("%s\n", ingredientes[i]);
+    }
 
-
-    // ---------------------------------------------------------
-    // ÁREA DO NÍVEL AVENTUREIRO (Pratos / Selection Sort)
-    // ---------------------------------------------------------
-    /*
-    // Inicialize aqui o seu vetor de Pratos
-    
-    printf("\n--- Nivel Aventureiro: Organizando os Pratos ---\n");
-    // Imprima antes, chame a funcao selectionSortPratos, imprima depois
-    */
-
-
-    // ---------------------------------------------------------
-    // ÁREA DO NÍVEL MESTRE (Comandas / Recursive Insertion Sort)
-    // ---------------------------------------------------------
-    /*
-    // Inicialize aqui o seu vetor de Comandas
-    
-    printf("\n--- Nivel Mestre: Organizando as Comandas ---\n");
-    // Imprima antes, chame a funcao recursiveInsertionSort, imprima depois
-    */
+    /* Aqui mostro as métricas — achei interessante ver quantas operações o algoritmo fez */
+    printf("\nTotais: Comparacões: %d | Trocas: %d\n", comparacoes, trocas);
 
     return 0;
 }
